@@ -1,0 +1,21 @@
+{
+  "name": "markup-mode",
+  "version": "1.0.0",
+  "description": "Paste a frontend-only review layer into any HTML or Markdown artifact, anchor comments to exact text or elements, and compile them to tagged Markdown for an agent to act on. No backend, no build step.",
+  "author": {
+    "name": "Bob Spunt",
+    "url": "https://github.com/spunt"
+  },
+  "homepage": "https://github.com/spunt/markup-mode",
+  "repository": "https://github.com/spunt/markup-mode",
+  "license": "MIT",
+  "keywords": [
+    "claude-code",
+    "claude-code-plugin",
+    "claude-skill",
+    "markup",
+    "annotation",
+    "code-review",
+    "markdown"
+  ]
+}

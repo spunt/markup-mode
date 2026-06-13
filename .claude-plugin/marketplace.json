@@ -1,0 +1,14 @@
+{
+  "name": "markup-mode",
+  "owner": {
+    "name": "Bob Spunt",
+    "url": "https://github.com/spunt"
+  },
+  "plugins": [
+    {
+      "name": "markup-mode",
+      "source": "./",
+      "description": "Paste a frontend-only review layer into any HTML or Markdown artifact, anchor comments to exact text or elements, and compile them to tagged Markdown for an agent to act on. No backend, no build step."
+    }
+  ]
+}

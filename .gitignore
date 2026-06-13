@@ -1,0 +1,20 @@
+# OS
+.DS_Store
+
+# Generated markup artifacts from scripts/apply.sh (regenerable build output)
+*.markup.html
+*.reviewed.html
+*.preview.html
+
+# Python bytecode cache (from scripts/*.py at apply time)
+__pycache__/
+*.pyc
+
+# Local agent / editor state (not part of the project)
+.claude/
+.cursor/
+.codex/
+.playwright-mcp/
+
+# Node modules (only if you install Playwright locally to run the test suite)
+node_modules/

@@ -1,0 +1,76 @@
+<!doctype html>
+<!--
+  markup-mode markdown host
+  =========================
+  A minimal, readable HTML shell for turning a Markdown document into a
+  markup-enabled review surface. markup-mode only attaches to HTML, so to review
+  a `.md` file you render it to an HTML *preview* inside this container, then run
+  the applier to splice the review layer in.
+
+  How to use (the skill does this for you):
+    1. Render the source Markdown to an HTML fragment (headings, lists, code,
+       tables, blockquotes — no <html>/<head>/<body> wrapper).
+    2. Replace everything between the CONTENT START / CONTENT END markers below
+       with that fragment, and set <title> to the doc's title.
+    3. Save as e.g. `doc.preview.html`, then:
+         scripts/apply.sh doc.preview.html --source /abs/path/to/doc.md --out .
+       The applier injects the layer before the closing body tag and records the
+       ORIGINAL `.md` path (not the preview's) in the compiled `Source:` line.
+
+  Self-contained, no network/CDN dependency — preserves the copy-paste ethos.
+  Typography follows prefers-color-scheme so it matches the layer's auto-theme.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{TITLE}}</title>
+<style>
+  :root{
+    --doc-bg:#ffffff; --doc-text:#23201b; --doc-dim:#6b6256; --doc-rule:rgba(40,38,32,.16);
+    --doc-accent:#c0843a; --doc-code-bg:#f1efea; --doc-maxw:46rem;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{ --doc-bg:#1c1f24; --doc-text:#e8e4dc; --doc-dim:#a59f93; --doc-rule:rgba(232,228,220,.16);
+           --doc-accent:#d4a046; --doc-code-bg:#2d313a; }
+  }
+  *{ box-sizing:border-box; }
+  html{ -webkit-text-size-adjust:100%; }
+  body{
+    margin:0; background:var(--doc-bg); color:var(--doc-text);
+    font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  main.doc{ max-width:var(--doc-maxw); margin:0 auto; padding:3rem 1.25rem 6rem; }
+  .doc h1,.doc h2,.doc h3,.doc h4{ line-height:1.25; margin:2em 0 .6em; font-weight:700; }
+  .doc h1{ font-size:2rem; margin-top:0; }
+  .doc h2{ font-size:1.5rem; border-bottom:1px solid var(--doc-rule); padding-bottom:.3em; }
+  .doc h3{ font-size:1.2rem; }
+  .doc p,.doc ul,.doc ol,.doc blockquote,.doc pre,.doc table{ margin:0 0 1.1em; }
+  .doc a{ color:var(--doc-accent); }
+  .doc ul,.doc ol{ padding-left:1.5em; }
+  .doc li{ margin:.3em 0; }
+  .doc blockquote{
+    margin-left:0; padding:.2em 1em; border-left:3px solid var(--doc-accent);
+    color:var(--doc-dim); background:var(--doc-code-bg);
+  }
+  .doc code{ font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:.9em;
+    background:var(--doc-code-bg); padding:.15em .4em; border-radius:4px; }
+  .doc pre{ background:var(--doc-code-bg); padding:1em 1.1em; border-radius:8px; overflow:auto; }
+  .doc pre code{ background:none; padding:0; }
+  .doc table{ border-collapse:collapse; width:100%; }
+  .doc th,.doc td{ border:1px solid var(--doc-rule); padding:.5em .7em; text-align:left; }
+  .doc th{ background:var(--doc-code-bg); }
+  .doc img{ max-width:100%; height:auto; }
+  .doc hr{ border:none; border-top:1px solid var(--doc-rule); margin:2em 0; }
+</style>
+</head>
+<body>
+<main class="doc">
+<!-- ==================== MARKUP-MODE:CONTENT START ==================== -->
+<h1>{{TITLE}}</h1>
+<p>Replace this block with the rendered Markdown HTML, then run
+<code>scripts/apply.sh</code> on this file to add the review layer.</p>
+<!-- ===================== MARKUP-MODE:CONTENT END ===================== -->
+</main>
+</body>
+</html>

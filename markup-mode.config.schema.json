@@ -1,0 +1,175 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://raw.githubusercontent.com/markup-mode/markup-mode/main/markup-mode.config.schema.json",
+  "title": "Markup Mode pre-build config",
+  "description": "One config file that apply.sh bakes into every generated artifact's window.MarkupModeConfig at apply time (no runtime fetch). CLI flags override these per key; absent/empty config == built-in defaults. Edit by hand or via scripts/config.sh set <key> <value>. Comments (// and /* */) and an annotated header are tolerated on read and preserved across set.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "description": "Editor schema hint (ignored by apply.sh and config.sh). Points at this schema file for VS Code autocomplete/validation."
+    },
+    "accent": {
+      "type": "string",
+      "description": "Layer accent color (--mm-accent): marks, highlight underline, primary buttons, active states. CSS color, e.g. \"#3b82f6\". apply.sh --accent overrides this.",
+      "pattern": "^(#[0-9a-fA-F]{3}|#[0-9a-fA-F]{6}|rgb\\(.*\\)|rgba\\(.*\\)|hsl\\(.*\\)|hsla\\(.*\\)|[a-zA-Z]+)$"
+    },
+    "accentSoft": {
+      "type": "string",
+      "description": "--mm-accent-soft: highlight fill / soft backgrounds. Usually an rgba() of the accent at ~15-22%. Never auto-sniffed from the host; set explicitly if the default translucent accent does not suit."
+    },
+    "accentInk": {
+      "type": "string",
+      "description": "--mm-accent-ink: text/icon color on accent-filled buttons (must pass WCAG AA against the accent). Derived automatically if omitted."
+    },
+    "bg": {
+      "type": "string",
+      "description": "--mm-bg: dock/popup surface (primary panel background)."
+    },
+    "bg2": {
+      "type": "string",
+      "description": "--mm-bg2: row hover, inner fields, secondary buttons (secondary surface)."
+    },
+    "text": {
+      "type": "string",
+      "description": "--mm-text: body text color."
+    },
+    "dim": {
+      "type": "string",
+      "description": "--mm-dim: secondary text, labels (muted text color)."
+    },
+    "border": {
+      "type": "string",
+      "description": "--mm-border: borders / hairline rule color."
+    },
+    "focus": {
+      "type": "string",
+      "description": "--mm-focus: focus ring color."
+    },
+    "danger": {
+      "type": "string",
+      "description": "--mm-danger: destructive-action color (delete, discard)."
+    },
+    "font": {
+      "type": "string",
+      "description": "--mm-font: chrome typeface (dock/popup only; the compiled-Markdown box always stays monospace). e.g. \"Georgia, serif\"."
+    },
+    "fontScale": {
+      "type": "number",
+      "minimum": 0.85,
+      "maximum": 1.4,
+      "description": "Multiplies the --mm-fs-* type ramp. Clamped to [0.85, 1.4]."
+    },
+    "themeFile": {
+      "type": "string",
+      "description": "Path to a theme document (themes/*.json) to inline into MarkupModeConfig.theme. A whole look (colors + font + fontScale) in one file. Relative paths resolve from the config file's directory. apply.sh --theme overrides this. Individual color keys above win over the theme doc for the same token."
+    },
+    "ns": {
+      "type": "string",
+      "description": "localStorage namespace (MarkupModeConfig.ns). Share one note set across URLs by giving every artifact the same stable ns. Default: derived per-file as \"markup-mode:<filename>\". apply.sh --ns overrides this."
+    },
+    "sourcePath": {
+      "type": "string",
+      "description": "Default value for the compiled \"Source:\" line (MarkupModeConfig.sourcePath). Normally left empty so apply.sh records each target's own absolute path; set only if every artifact should report a fixed canonical path. apply.sh --source overrides this."
+    },
+    "shortcut": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Toggle-comment-mode chord (MarkupModeConfig.shortcut). mod = Cmd/Ctrl. Default: Cmd/Ctrl+Shift+K. apply.sh --shortcut \"mod+shift+k\" overrides this.",
+      "properties": {
+        "key": { "type": "string", "description": "Single key, e.g. \"k\"." },
+        "mod": { "type": "boolean", "description": "Require Cmd (mac) / Ctrl." },
+        "shift": { "type": "boolean", "description": "Require Shift." },
+        "alt": { "type": "boolean", "description": "Require Alt/Option." }
+      }
+    },
+    "keymap": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Rebind layer keys without editing source (MarkupModeConfig.keymap). Baked at apply time; overlays the built-in keymap, under which runtime per-page preferences still win. apply.sh --keymap KEY=CHORD overrides individual entries.",
+      "properties": {
+        "toggle": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "Alias for shortcut (toggle comment mode). If both shortcut and keymap.toggle are set, keymap.toggle is applied after and wins.",
+          "properties": {
+            "key": { "type": "string" },
+            "mod": { "type": "boolean" },
+            "shift": { "type": "boolean" },
+            "alt": { "type": "boolean" }
+          }
+        },
+        "addRef": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "Modifier held (while a note is open) to insert/copy a [ref:] anchor. Default Alt/Option.",
+          "properties": {
+            "mod": {
+              "type": "string",
+              "enum": ["alt", "shift", "ctrl", "meta"],
+              "description": "Which modifier gates reference insertion."
+            }
+          }
+        },
+        "resizeUp": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "Key to grow the element-anchor selection up the target chain. Default ArrowUp.",
+          "properties": { "key": { "type": "string" } }
+        },
+        "resizeDown": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "Key to shrink the element-anchor selection. Default ArrowDown.",
+          "properties": { "key": { "type": "string" } }
+        },
+        "copyRef": {
+          "description": "Optional chord to toggle Copy-ref mode (copies a [ref:] token instead of leaving a note). null = disabled (default).",
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "key": { "type": "string" },
+                "mod": { "type": "boolean" },
+                "shift": { "type": "boolean" },
+                "alt": { "type": "boolean" }
+              }
+            },
+            { "type": "null" }
+          ]
+        }
+      }
+    },
+    "autoTheme": {
+      "type": "boolean",
+      "description": "Sniff the host's :root for recognizable tokens (--accent, --bg, --text, --border, ...) and adopt them where no explicit color is set. Default true. Set false to disable host-token sniffing entirely.",
+      "default": true
+    },
+    "behavior": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Initial runtime preferences baked into MarkupModeConfig.prefs. These seed the per-namespace localStorage prefs on first open of an artifact; once a reviewer changes a setting in the gear panel, their localStorage choice wins for that namespace.",
+      "properties": {
+        "reduceMotion": {
+          "type": "boolean",
+          "description": "Start with reduced motion (disable transitions/animations)."
+        },
+        "themeMode": {
+          "type": "string",
+          "enum": ["auto", "light", "dark"],
+          "description": "Initial appearance mode. Default auto (follows prefers-color-scheme / host)."
+        },
+        "showMarks": {
+          "type": "boolean",
+          "description": "Show pins and outlines on mount. Default true. False hides marks without deleting notes."
+        },
+        "openOnReveal": {
+          "type": "boolean",
+          "description": "Single-clicking a mark also opens and scrolls the dock note list. Default true."
+        }
+      }
+    }
+  }
+}

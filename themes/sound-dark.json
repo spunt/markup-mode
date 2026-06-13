@@ -1,0 +1,14 @@
+{
+  "accent": "#7aa2f7",
+  "accentSoft": "rgba(122,162,247,0.20)",
+  "accentInk": "#a9c1ff",
+  "bg": "#1a1b26",
+  "bg2": "#24283b",
+  "text": "#c0caf5",
+  "dim": "#9aa5ce",
+  "border": "rgba(192,202,245,0.18)",
+  "focus": "#a9c1ff",
+  "danger": "#f7768e",
+  "font": "'Inter', -apple-system, system-ui, sans-serif",
+  "fontScale": 1.0
+}

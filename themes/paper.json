@@ -1,0 +1,14 @@
+{
+  "accent": "#8a6d3b",
+  "accentSoft": "rgba(138,109,59,0.16)",
+  "accentInk": "#6b5328",
+  "bg": "#faf6ee",
+  "bg2": "#efe7d6",
+  "text": "#2b2419",
+  "dim": "#6f6553",
+  "border": "rgba(43,36,25,0.22)",
+  "focus": "#6b5328",
+  "danger": "#9c3328",
+  "font": "Georgia, 'Iowan Old Style', 'Palatino Linotype', serif",
+  "fontScale": 1.05
+}

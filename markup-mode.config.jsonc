@@ -1,0 +1,44 @@
+// ─────────────────────────────────────────────────────────────────────────
+// Markup Mode — pre-build settings surface
+//
+// ONE config file that apply.sh bakes into EVERY generated artifact's
+// window.MarkupModeConfig at apply time (no runtime fetch — file:// artifacts
+// stay self-contained, single-file). Set a value here once and it governs all
+// future applications of the skill.
+//
+// Precedence (high → low):  CLI flag  >  this file  >  built-in default.
+//   • An explicit apply.sh flag (--accent / --ns / --shortcut / --theme /
+//     --source / --keymap) always wins for that one-off run.
+//   • Anything you don't set here falls back to the built-in default.
+//   • This file empty or missing == exactly today's default behavior.
+//
+// Two ways to change it:
+//   • Hand-edit this file (// and /* */ comments are allowed and preserved).
+//   • scripts/config.sh set <key> <value>   (validates, then writes,
+//     preserving this header and your other keys).
+//       scripts/config.sh set accent "#6366f1"
+//       scripts/config.sh set shortcut "mod+shift+j"
+//       scripts/config.sh set keymap.addRef.mod shift
+//       scripts/config.sh set behavior.themeMode dark
+//       scripts/config.sh unset accent          # revert one key to default
+//
+// Run  scripts/config.sh list  to see every key and its resolved value.
+// Schema (for editor autocomplete) lives in markup-mode.config.schema.json.
+//
+// Keys (all optional):
+//   Colors:    accent accentSoft accentInk bg bg2 text dim border focus danger
+//   Type:      font  fontScale (0.85–1.4)
+//   Whole look: themeFile (a themes/*.json document; per-token colors above win)
+//   Identity:  ns  sourcePath
+//   Keys:      shortcut  keymap.toggle  keymap.addRef.mod  keymap.resizeUp.key
+//              keymap.resizeDown.key  keymap.copyRef
+//   Host:      autoTheme
+//   Behavior:  behavior.reduceMotion  behavior.themeMode (auto|light|dark)
+//              behavior.showMarks  behavior.openOnReveal
+//
+// The file ships intentionally empty (only $schema) so applying with it present
+// reproduces today's defaults. Add only the keys you want to override.
+// ─────────────────────────────────────────────────────────────────────────
+{
+  "$schema": "./markup-mode.config.schema.json"
+}
