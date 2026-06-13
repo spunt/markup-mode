@@ -2,9 +2,9 @@
 
 **Paste one file into any web page, leave precise feedback anchored to exact text or exact elements, and compile it to Markdown for a person or an AI agent to act on.** It needs no backend, no build step, and no dependencies, and it never changes the page's own content.
 
-[![Markup Mode in action: arming the dock, highlighting a claim, writing a note, marking an element, and compiling to Markdown](docs/demo.gif)](https://spunt.github.io/markup-mode/assets/templates/markup-mode.html)
+[![Markup Mode in action: arming the dock, highlighting a claim, writing a note, marking an element, and compiling to Markdown](docs/demo.gif)](https://www.bobspunt.com/markup-mode/assets/templates/markup-mode.html)
 
-<sub>**[Try the live demo](https://spunt.github.io/markup-mode/assets/templates/markup-mode.html)** · one HTML file, opens in any browser</sub>
+<sub>**[Try the live demo](https://www.bobspunt.com/markup-mode/assets/templates/markup-mode.html)** · one HTML file, opens in any browser</sub>
 
 ## Why I built this
 
