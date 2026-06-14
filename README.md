@@ -8,6 +8,19 @@
 
 <sub>**[Try the live demo](https://www.bobspunt.com/markup-mode/assets/templates/markup-mode.html)** · one HTML file, opens in any browser</sub>
 
+## Contents
+
+- [Why I built this](#why-i-built-this)
+- [Why you might want it](#why-you-might-want-it)
+- [What you hand back](#what-you-hand-back)
+- [Quick start](#quick-start)
+  - [Use it as an agent skill](#use-it-as-an-agent-skill)
+  - [Use it on a page by hand](#use-it-on-a-page-by-hand)
+- [How it works](#how-it-works)
+- [Customize it](#customize-it)
+- [Good to know](#good-to-know)
+- [License](#license)
+
 ## Why I built this
 
 My agents build a lot of what I review — a generated report, a draft landing page — and the bottleneck was never *spotting* what's off. I could see it instantly ("this number needs a source," "that axis starts at 50, not zero"). The hard part was telling the agent *which* word or *which* element I meant. A screenshot hands it a picture, not text it can locate. "Fix the third chart" makes it guess. So I'd describe a spot in prose while the agent hunted for it — busywork an agent is supposed to spare you.
