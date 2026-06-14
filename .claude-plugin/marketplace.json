@@ -8,7 +8,7 @@
     {
       "name": "markup-mode",
       "source": "./",
-      "description": "Paste a frontend-only review layer into any HTML or Markdown artifact, anchor comments to exact text or elements, and compile them to tagged Markdown for an agent to act on. No backend, no build step."
+      "description": "A review layer your agent applies to its own HTML or Markdown output in one command. You pin feedback to the exact word or element, and Markup Mode compiles each note to Markdown precise enough for the agent to act on, then hands it back. No backend, no build step."
     }
   ]
 }

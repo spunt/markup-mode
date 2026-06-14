@@ -1,6 +1,8 @@
 # Markup Mode
 
-**Paste one file into any web page, leave precise feedback anchored to exact text or exact elements, and compile it to Markdown for a person or an AI agent to act on.** It needs no backend, no build step, and no dependencies, and it never changes the page's own content.
+**Your agent builds something. It applies Markup Mode to its own output in one command, and you mark exactly what's off — the precise word or element, right on the page.**
+
+*The layer captures the exact spot you marked and compiles it into Markdown you hand back to the agent. Frontend-only — no backend, no build step, and it never changes your document's own content.*
 
 [![Markup Mode in action: arming the dock, highlighting a claim, writing a note, marking an element, and compiling to Markdown](docs/demo.gif)](https://www.bobspunt.com/markup-mode/assets/templates/markup-mode.html)
 
@@ -8,25 +10,27 @@
 
 ## Why I built this
 
-I kept hitting the same wall reviewing things in the browser, whether an AI-generated report or a draft landing page. I could see exactly what was off ("this number needs a source," "that axis starts at 50, not zero"), but I had no clean way to say *which* word or *which* element I meant. A screenshot loses the context. A comment on a whole `<div>` can't point at one clause in a sentence. And standing up a real review tool, with a database and an API and a login, is absurd overkill for jotting three notes on a page.
+My agents build a lot of what I review — a generated report, a draft landing page — and the bottleneck was never *spotting* what's off. I could see it instantly ("this number needs a source," "that axis starts at 50, not zero"). The hard part was telling the agent *which* word or *which* element I meant. A screenshot hands it a picture, not text it can locate. "Fix the third chart" makes it guess. So I'd describe a spot in prose while the agent hunted for it — busywork an agent is supposed to spare you.
 
-So Markup Mode is the small thing in between. You turn it on, click a sentence or an element, type a note, and it records a human breadcrumb, the exact quote, and a CSS selector. Hit compile and you get a tidy Markdown bundle you can paste straight back to whoever, or whatever, is going to fix it.
+So Markup Mode takes that step off the table. The agent applies the layer to its own output in one command (`scripts/apply.sh`); you click the sentence or element that's wrong and type a note. The part that stays human is the review — *you* decide what's wrong and why. What's automated is the mechanical part: applying the layer, and compiling your notes into a handback file — the compiled Markdown — you pass back to the agent (or it reads the file itself).
 
-It came out of agent workflows specifically. An agent makes something, I mark it up where it actually renders, and the notes go back as instructions the agent can follow without guessing what I was looking at.
+Each note carries three things: a readable "Where" trail (like `Main › §"Results" › p "Conversion rose…"`), the exact quote, and a **locator** — that quote plus a little of the surrounding text. The locator matches on the words themselves, so it survives the markup-and-formatting differences between the rendered page and the source — though not the words being rewritten. When a quote repeats on the page, the surrounding context is what resolves it to one spot. The handback is formatted to tell the agent to edit only where a note points to a single spot, and to flag a note rather than guess when it doesn't. The agent's cooperation is still the agent's; what the tool controls is the instructions it gets.
+
+No agent in the loop? You can add the layer by hand and review exactly the same way — turn it on, mark up, hand off the notes. The agent loop is what it's built for, but reviewing your own work is a first-class use too.
 
 ## Why you might want it
 
-It's for anyone who reviews web artifacts and wants their feedback to be unambiguous: pinned to exact text or an exact element, without dragging in infrastructure.
+It's for people who run agents on real work and want a tighter pass on what comes back — feedback pinned to exact text or an element, handed over as Markdown.
 
 A few ways it gets used:
 
-- **Closing the loop on AI work.** An agent builds an artifact; you mark precisely what's wrong, in place; you paste the compiled notes back as a punch list. The agent acts on quotes and selectors instead of vague prose.
-- **Design and copy review without a tracker.** Drop the layer into a staging page, leave element and text notes, and hand the Markdown to whoever's iterating. You don't need a Jira ticket or an extra seat.
+- **Marking in place, so the agent edits the exact spot.** Your agent builds an artifact and applies the layer; you mark precisely what's wrong, right on the page; the compiled notes go back as a handback that points the agent at that exact spot.
+- **Design and copy review without a tracker.** Drop the layer into a staging page, leave element and text notes, and hand the Markdown to whoever's iterating — no ticket, no tracker.
 - **Your own QA pass.** Walk a page you built, pin issues as you spot them, and export a checklist before you ship.
 
 ## What you hand back
 
-Compile turns every note into a Markdown block meant to be acted on. The quote comes first, so a human or a model can find the spot even if the page was regenerated, and the selector is only a positional hint:
+Compile turns every note into a Markdown block meant to be acted on. The quote comes first, so a human or a model can find the spot by its words even when the page's markup differs, and the selector is only a positional hint:
 
 ```markdown
 # Feedback — Quarterly Report (review)
@@ -50,17 +54,9 @@ Comment:
 
 ## Quick start
 
-### Use it on a page (no install)
-
-1. Open [`assets/templates/markup-mode.html`](assets/templates/markup-mode.html) in a browser. That file is itself a live demo.
-2. To add it to **your** page, copy everything between the two `<!-- MARKUP MODE - copy from here / to here -->` markers (both `<style>` blocks and the `<script>`) and paste it just before your `</body>`.
-3. *(Optional)* Match your design: point the seven `--mm-*` variables at your own tokens, or let it auto-detect common host variables. See [`references/adaptation.md`](references/adaptation.md).
-
-Notes live in `localStorage` and go nowhere until you copy or export. Delete the pasted block and the file is byte-for-byte what it was.
-
 ### Use it as an agent skill
 
-Markup Mode is also an agent skill: instead of pasting the block yourself, you tell your agent *"mark up this page"* and it applies the layer for you (`scripts/apply.sh`), then compiles your notes back as Markdown.
+Markup Mode is built to run as an agent skill: tell your agent *"mark up this page"* and it applies the review layer with one command (`scripts/apply.sh`), then compiles your notes into a tagged-Markdown handback you pass back to it. It works on rendered HTML and Markdown — for a `.md` file, the same command renders it first, then splices the layer in. It declines client-rendered SPA shells, since there's no server-rendered text to anchor to (see [Good to know](#good-to-know), or pass `--force`). It writes a markup-enabled *copy* and adds the layer to that copy, so it never changes your document's own content.
 
 - **Any `SKILL.md`-aware agent (Claude Code, Codex, …).** Drop this repo into your agent's skills directory — e.g. `~/.claude/skills/markup-mode/` or `~/.agents/skills/markup-mode/` — so the agent reads `SKILL.md` at the root.
 - **As a Claude Code plugin.**
@@ -68,7 +64,12 @@ Markup Mode is also an agent skill: instead of pasting the block yourself, you t
   /plugin marketplace add spunt/markup-mode
   /plugin install markup-mode@markup-mode
   ```
-- **By hand, no agent at all.** Skip the skill entirely — the "Use it on a page" steps above are all you need.
+
+### Use it on a page by hand
+
+No agent? Open [`assets/templates/markup-mode.html`](assets/templates/markup-mode.html) — a runnable demo of the layer and the file you copy the block from. To add it to **your** page, copy everything between the two `<!-- MARKUP MODE - copy from here / to here -->` markers (both `<style>` blocks and the `<script>`) and paste it just before your `</body>`. Notes live in `localStorage` and go nowhere until you copy or export; delete the block and the layer is gone.
+
+*(Optional)* Match your design: point the seven `--mm-*` variables at your own tokens, or let it auto-detect common host variables. See [`references/adaptation.md`](references/adaptation.md).
 
 ## How it works
 

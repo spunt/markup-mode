@@ -1,6 +1,6 @@
 ---
 name: markup-mode
-description: Add a frontend-only review/markup layer to any HTML artifact, Markdown document, or live UI so a reviewer can anchor comments to specific text or specific elements, then compile them into tagged Markdown for an agent to act on. Use when the user wants to "mark up this page", "add a review/comment layer", "annotate this artifact", "leave feedback on specific parts", invokes "markup mode", or wants unambiguous, location-anchored notes handed back as Markdown. It is copy-paste, needs no backend, and does not alter the host's content.
+description: Add a frontend-only review/markup layer to any HTML artifact, Markdown document, or live UI so a reviewer can anchor comments to specific text or specific elements, then compile them into tagged Markdown for an agent to act on. Use when the user wants to "mark up this page", "add a review/comment layer", "annotate this artifact", "leave feedback on specific parts", invokes "markup mode", or wants unambiguous, location-anchored notes handed back as Markdown. Applied in one command (scripts/apply.sh) to any rendered HTML or Markdown artifact — or by hand as a fallback; it writes a markup-enabled copy, needs no backend, and never changes the host's own content.
 ---
 
 # Markup Mode
@@ -24,7 +24,7 @@ Notes accumulate in a collapsible dock and **compile to tagged Markdown** (with 
 
 - A persistent, multi-user, or queryable feedback backend is required (SQLite + endpoints + a triage UI) → that is a heavier, server-backed tool, not this.
 - Non-HTML targets (native apps, PDFs, images).
-- Simple "add a feedback button that POSTs somewhere" — Markup Mode is copy-paste/Markdown only.
+- Simple "add a feedback button that POSTs somewhere" — Markup Mode hands back Markdown, not a server round-trip.
 - **Client-rendered app shells** — pages whose `<body>` is built at load by a JavaScript bundle rather than shipped as static HTML: **Databricks notebook exports**, Next.js/Nuxt/Angular/React SPA exports, or any "empty `<div id="root">` + bundle" page. The host's own JS replaces the body after load, discarding the injected layer — so the marks never appear. `scripts/apply.sh` **detects and refuses these by default** with an explanation (`--force` overrides). To review one anyway, open it in a browser, let it render, **Save Page As → "Webpage, Complete"**, and apply Markup Mode to that static snapshot — or export the source as Markdown and use the one-command `.md` route.
 
 ## How to apply it to a target
