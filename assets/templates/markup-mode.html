@@ -17,35 +17,57 @@
   .card{ border:1px solid #e6e0d4; border-radius:12px; padding:16px 18px; background:#fff; }
   .card h3{ margin:0 0 6px; font-size:15px; }
   .card p{ margin:0; font-size:14px; color:#675f52; }
+  .demo-table-wrap{ margin-top:16px; overflow-x:auto; border:1px solid #e6e0d4; border-radius:10px; background:#fff; }
+  .demo-table{ width:100%; border-collapse:collapse; font-size:14px; }
+  .demo-table caption{ text-align:left; padding:12px 14px 4px; font-weight:700; font-size:13px; color:#50483d; }
+  .demo-table th,.demo-table td{ border-top:1px solid #eee7dc; padding:9px 14px; text-align:left; }
+  .demo-table th{ color:#50483d; background:#faf6ee; font-size:12px; text-transform:uppercase; letter-spacing:.04em; }
+  .demo-table td{ color:#332f28; }
   code{ font-family:ui-monospace,"SF Mono",Menlo,monospace; font-size:.9em; background:#efeadf; padding:1px 5px; border-radius:4px; }
   @media (prefers-color-scheme: dark){
-    body{ background:#1b1e24; color:#e8e4dc; } .card{ background:#23262d; border-color:#343842; }
+    body{ background:#1b1e24; color:#e8e4dc; } .card,.demo-table-wrap{ background:#23262d; border-color:#343842; }
     .sub,.card p{ color:#a59f93; } code{ background:#2d313a; }
+    .demo-table caption,.demo-table th{ color:#c7c0b5; } .demo-table th{ background:#292d36; }
+    .demo-table th,.demo-table td{ border-top-color:#343842; } .demo-table td{ color:#e8e4dc; }
   }
 </style>
 </head>
 <body>
 <main>
   <h1>Markup Mode — live demo</h1>
-  <p class="sub">Turn on review mode, then select text or click an element to leave a note. This page is also the copyable reference — grab the block between the markers below and paste it into any artifact before the closing body tag.</p>
+  <p class="sub">Start Markup Mode, then select text or click an element to leave a note. This page is also the copyable reference — grab the block between the markers below and paste it into any artifact before the closing body tag.</p>
 
   <section>
     <h2>What it does</h2>
-    <p>Markup Mode adds a frontend-only review layer to any page. A reviewer anchors a note to a <strong>specific run of text</strong> (a claim, a sentence) or to a <strong>specific element</strong> (a card, a chart), then compiles every note into a tagged Markdown bundle to hand back to an agent.</p>
-    <p>It writes nothing into the host's content and needs no backend: notes live in <code>localStorage</code> and leave as Markdown via Copy or Export.</p>
+    <p>Markup Mode adds a frontend-only review layer to any page. A reviewer anchors a note to a <strong>specific run of text</strong> (a claim, a sentence) or to a <strong>specific element</strong> (a card, a table cell, a chart), then compiles every note into tagged Markdown to hand back to an agent.</p>
+    <p>It writes nothing into the host's content and needs no backend: notes live in <code>localStorage</code> and leave as Markdown or as a reviewed HTML snapshot.</p>
   </section>
 
   <section>
     <h2>Two anchor types</h2>
     <div class="cards">
       <div class="card"><h3>Text anchor</h3><p>Drag-select any words. The selection snaps to word boundaries, is highlighted in place, and the exact quote is recorded.</p></div>
-      <div class="card"><h3>Element anchor</h3><p>Click any element; press the arrow keys to grow or shrink the pick. A numbered mark labels the target unambiguously.</p></div>
+      <div class="card"><h3>Element anchor</h3><p>Click any element; press the arrow keys to grow or shrink the pick. A compact pin and outline label the target unambiguously.</p></div>
+    </div>
+    <div class="demo-table-wrap">
+      <table class="demo-table">
+        <caption>Table targeting demo</caption>
+        <thead>
+          <tr><th>Area</th><th>Signal</th><th>Status</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Intro copy</td><td>Specific sentence</td><td>Ready</td></tr>
+          <tr><td>Pricing table</td><td>Single cell</td><td>Needs review</td></tr>
+          <tr><td>Summary row</td><td>Whole row</td><td>Approved</td></tr>
+        </tbody>
+      </table>
     </div>
   </section>
 
   <section>
     <h2>Try it</h2>
-    <p>Click <strong>Start Markup Mode</strong> in the dock (bottom-right) or press <code>Cmd/Ctrl+Shift+K</code>. Leave a couple of notes, click a mark to edit, then Compile and Copy. On a wide screen, use the dock-to-right button to make the panel a resizable column.</p>
+    <p>Click <strong>Start Markup Mode</strong> in the dock or press <code>Cmd/Ctrl+Shift+K</code>. The dock opens as a right rail by default, can move left or float, and collapses to a bottom-right pill when minimized.</p>
+    <p>Leave a couple of notes, single-click a mark or dock row to reveal it, then double-click the mark or use the row edit button to revise it. Use <strong>Show Compiled</strong> to preview the Markdown, or export Markdown / reviewed HTML from the export menu.</p>
   </section>
 </main>
 
@@ -453,7 +475,9 @@ body.mm-armed ::selection{ background:var(--mm-accent-soft); }
     var r=rectOf(node); if(!r || r.width<1 || r.height<1) return false;
     var cs=getComputedStyle(node); return cs.display!=="none" && cs.visibility!=="hidden" && cs.pointerEvents!=="none"; }
   function isControlTarget(node){ return !!(node && node.closest && node.closest('button,a[href],input,select,textarea,summary,[contenteditable="true"],[role="button"],[role="link"],[role="menuitem"],[role="tab"]')); }
-  function isProseBlock(node){ return !!(node && /^(P|LI|H1|H2|H3|H4|H5|H6|BLOCKQUOTE|PRE|TD|TH)$/.test(node.tagName)); }
+  function isTablePart(node){ return !!(node && /^(TD|TH|TR|THEAD|TBODY|TFOOT|TABLE|CAPTION)$/.test(node.tagName)); }
+  function tableRank(node){ var map={TD:6,TH:6,TR:5,THEAD:4,TBODY:4,TFOOT:4,CAPTION:4,TABLE:3}; return (node && map[node.tagName]) || 0; }
+  function isProseBlock(node){ return !!(node && /^(P|LI|H1|H2|H3|H4|H5|H6|BLOCKQUOTE|PRE)$/.test(node.tagName)); }
   function hasMeaningfulAttrs(node){ return !!(node && (node.id || node.getAttribute("role") || node.getAttribute("aria-label") || node.getAttribute("data-mm-target") || node.getAttribute("data-testid"))); }
   function usefulClass(node){ if(!node || !node.classList || !node.classList.length) return false;
     var generic=/^(wrapper|container|inner|outer|content|row|col|grid|flex|stack|section|block|item)$/i;
@@ -466,6 +490,7 @@ body.mm-armed ::selection{ background:var(--mm-accent-soft); }
     var score=0, tag=node.tagName, r=rectOf(node), pr=node.parentElement&&rectOf(node.parentElement);
     if(node===hit) score+=8;
     if(isControlTarget(node) && (node===hit || node.contains(hit))) score+=110;
+    if(tableRank(node)){ score+=70+(tableRank(node)*12); if(node===hit || node.contains(hit)) score+=14; }
     if(inMarkdown && isProseBlock(node)) score+=85;
     else if(isProseBlock(node)) score+=24;
     if(/^(ARTICLE|SECTION|ASIDE|NAV|HEADER|FOOTER|MAIN|FIGURE|TABLE)$/.test(tag)) score+=30;
@@ -481,6 +506,12 @@ body.mm-armed ::selection{ background:var(--mm-accent-soft); }
     if(!raw || isOurs(raw)) return { el:null, chain:[], index:-1 };
     var path=pathFromEvent(e), inMarkdown=!!(raw.closest && raw.closest(".doc"));
     var scored=path.map(function(n,i){ return { el:n, i:i, score:scoreTarget(n, raw, inMarkdown) }; }).filter(function(x){ return x.score>-20; });
+    var hitTable = raw.closest && raw.closest("td,th,tr,thead,tbody,tfoot,caption,table");
+    if(hitTable){
+      var tableChain=path.filter(function(n){ return isTablePart(n) || (scoreTarget(n, raw, inMarkdown)>-20 && n!==document.body && n!==document.documentElement); });
+      if(tableChain.indexOf(hitTable)<0) tableChain.unshift(hitTable);
+      return { el:hitTable, chain:tableChain, index:Math.max(0, tableChain.indexOf(hitTable)) };
+    }
     if(!scored.length) return { el:raw, chain:[raw], index:0 };
     scored.sort(function(a,b){ return b.score-a.score || a.i-b.i; });
     var best=scored[0].el, bestIdx=path.indexOf(best);
@@ -1206,7 +1237,10 @@ body.mm-armed ::selection{ background:var(--mm-accent-soft); }
 
   function onMove(e){ var t=e.target; if(!t || t.nodeType!==1){ return; } if(isOurs(t)){ hoverEl=null; targetChain=[]; targetIndex=-1; scheduleReposition(); return; }
     if(pending) refModActive=addRefModHeld(e);
-    var c=resolveIntentTarget(e); setTargetChoice(c, false); if(!pending) lockedEl=null; scheduleReposition(); }
+    var prevLocked=lockedEl, c=resolveIntentTarget(e); setTargetChoice(c, false);
+    if(!pending && prevLocked && c.chain && c.chain.indexOf(prevLocked)>=0){ lockedEl=prevLocked; hoverEl=lockedEl; targetIndex=c.chain.indexOf(prevLocked); }
+    else if(!pending) lockedEl=null;
+    scheduleReposition(); }
   function onClick(e){ if(isOurs(e.target)) return; if(popMoving) return; if(!mode) return;
     if(pending){ refModActive=addRefModHeld(e); scheduleReposition(); var psel=window.getSelection(); if(psel && !psel.isCollapsed && (""+psel).trim()) return; if(!refModActive) return; e.preventDefault(); e.stopPropagation(); var pp=primaryAnchorForClick(e); if(!pp||!pp.anchor) return; insertRef(pp.anchor); lockedEl=null; return; }
     var sel=window.getSelection(); if(sel && !sel.isCollapsed && (""+sel).trim()) return;
@@ -1231,14 +1265,17 @@ body.mm-armed ::selection{ background:var(--mm-accent-soft); }
     if(settingsEl.classList.contains("mm-open")){ if(e.key==="Escape"){ e.preventDefault(); e.stopPropagation(); closeSettings(); } return; }
     if(e.key==="Escape"){ if(pending) closePopup(); else { setActive(null); exitMode(); } return; }
     if(pending) return;
-    if(isOurs(document.activeElement)) return;
     var up=(keymap.resizeUp&&keymap.resizeUp.key)||"ArrowUp", down=(keymap.resizeDown&&keymap.resizeDown.key)||"ArrowDown";
-    if((e.key===up||e.key===down) && (hoverEl||lockedEl)){ e.preventDefault();
+    if((e.key===up||e.key===down) && (hoverEl||lockedEl)){
+      var ae=document.activeElement;
+      if(isOurs(ae) && ae.closest && ae.closest(".mm-list,.mm-settings,.mm-pop")) return;
+      e.preventDefault();
       if(!targetChain.length && (lockedEl||hoverEl)){ targetChain=[lockedEl||hoverEl]; targetIndex=0; }
       if(e.key===up && targetIndex<targetChain.length-1) targetIndex++;
       else if(e.key===down && targetIndex>0) targetIndex--;
       lockedEl=targetChain[targetIndex] || lockedEl || hoverEl; hoverEl=lockedEl;
       scheduleReposition(); }
+    if(isOurs(document.activeElement)) return;
   }
 
   document.addEventListener("keydown", function(e){

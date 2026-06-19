@@ -151,7 +151,7 @@ const COPY_REF_ENABLED = false;
   await page.waitForTimeout(60);
   check('S2 popup open', await page.evaluate(() => document.querySelector('.mm-pop').classList.contains('mm-open')));
   check('S2 kind TEXT', (await page.textContent('.mm-popkind')) === 'TEXT');
-  check('S2 word-snap whole word', /Turn/.test(await page.textContent('.mm-popquote')));
+  check('S2 word-snap whole word', /Start/.test(await page.textContent('.mm-popquote')));
   check('C: new-note modal labels (New note / Discard / Save note)', await page.evaluate(() =>
     /New note/.test(document.querySelector('.mm-popmode').textContent) &&
     document.querySelector('.mm-cancel').textContent === 'Discard' &&
@@ -305,6 +305,27 @@ const COPY_REF_ENABLED = false;
   check('SMART2 card heading click resolves to card/component boundary by default', await page.evaluate(() =>
     document.querySelector('.mm-pop').classList.contains('mm-open') &&
     /div\.card/.test(document.querySelector('.mm-popwhere').textContent)));
+  await page.keyboard.press('Escape'); await page.waitForTimeout(40);
+  await page.evaluate(() => {
+    const host = document.createElement('section');
+    host.className = 'smart-table-fixture';
+    host.innerHTML = '<div class="report-container"><table class="data-grid"><tbody><tr><td>North</td><td>42</td></tr></tbody></table></div>';
+    document.querySelector('main').appendChild(host);
+  });
+  await page.click('.smart-table-fixture td:first-child'); await page.waitForTimeout(60);
+  check('SMART3 table click resolves to the cell before wrapper/table containers', await page.evaluate(() =>
+    document.querySelector('.mm-pop').classList.contains('mm-open') &&
+    document.querySelector('.mm-popkind').textContent === 'ELEMENT' &&
+    /td/.test(document.querySelector('.mm-popwhere').textContent) &&
+    !/report-container|table\.data-grid|body/.test(document.querySelector('.mm-popwhere').textContent)));
+  await page.keyboard.press('Escape'); await page.waitForTimeout(40);
+  await page.hover('.smart-table-fixture td:first-child');
+  await page.keyboard.press('ArrowUp');
+  await page.click('.smart-table-fixture td:first-child'); await page.waitForTimeout(60);
+  check('SMART4 ArrowUp grows table target from cell to row', await page.evaluate(() =>
+    document.querySelector('.mm-pop').classList.contains('mm-open') &&
+    document.querySelector('.mm-popkind').textContent === 'ELEMENT' &&
+    /tr/.test(document.querySelector('.mm-popwhere').textContent)));
   await page.keyboard.press('Escape'); await page.waitForTimeout(40);
 
   // S5: secondary-ref insertion while a note is open — Alt/Option-gated gesture.
@@ -1534,6 +1555,21 @@ const COPY_REF_ENABLED = false;
         document.querySelector('.mm-pop').classList.contains('mm-open') &&
         document.querySelector('.mm-popkind').textContent === 'ELEMENT' &&
         /a/.test(document.querySelector('.mm-popwhere').textContent)));
+      await pm.keyboard.press('Escape'); await pm.waitForTimeout(40);
+      await pm.click('.doc tbody tr:nth-of-type(1) td:nth-of-type(1)'); await pm.waitForTimeout(80);
+      check('MD11: clicking Markdown table text resolves to the cell, not the whole document', await pm.evaluate(() =>
+        document.querySelector('.mm-pop').classList.contains('mm-open') &&
+        document.querySelector('.mm-popkind').textContent === 'ELEMENT' &&
+        /td/.test(document.querySelector('.mm-popwhere').textContent) &&
+        !/^body\b/.test(document.querySelector('.mm-popwhere').textContent)));
+      await pm.keyboard.press('Escape'); await pm.waitForTimeout(40);
+      await pm.hover('.doc tbody tr:nth-of-type(1) td:nth-of-type(1)');
+      await pm.keyboard.press('ArrowUp');
+      await pm.click('.doc tbody tr:nth-of-type(1) td:nth-of-type(1)'); await pm.waitForTimeout(80);
+      check('MD11: ArrowUp grows Markdown table target from cell to row', await pm.evaluate(() =>
+        document.querySelector('.mm-pop').classList.contains('mm-open') &&
+        document.querySelector('.mm-popkind').textContent === 'ELEMENT' &&
+        /tr/.test(document.querySelector('.mm-popwhere').textContent)));
       await pm.keyboard.press('Escape'); await pm.waitForTimeout(40);
       await pm.evaluate(() => {
         const pre=document.querySelector('.doc pre');
